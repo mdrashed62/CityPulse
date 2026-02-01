@@ -1,4 +1,3 @@
-cat << 'EOF' > stop.sh
 #!/bin/bash
 
 echo "🛑 Stopping University Bus Tracker..."
@@ -13,4 +12,3 @@ if [ -f .pids ]; then
 else
     echo "⚠️ No .pids file found. Is the app running?"
 fi
-EOF

@@ -1,28 +1,35 @@
 #!/bin/bash
 
-echo "🚀 Starting University Bus Tracker..."
+echo "🚀 Starting CityPulse: University Bus Tracker..."
 
-# Create logs directory if it doesn't exist
-mkdir -p logs
+# Function to kill background processes on exit
+cleanup() {
+    echo -e "\n🛑 Stopping servers..."
+    kill $BACKEND_PID $FRONTEND_PID 2>/dev/null
+    exit
+}
 
-# Start Backend
-echo "Starting Backend on port 5000..."
+# Trap Ctrl+C (SIGINT) and call the cleanup function
+trap cleanup SIGINT
+
+# 1. Start Backend
+echo "📡 Starting Backend on port 5000..."
 cd backend
-npm run dev > ../logs/backend.log 2>&1 &
+# We run this in the background but let it print to STDOUT
+npm run dev &
 BACKEND_PID=$!
 cd ..
 
-# Start Frontend
-echo "Starting Frontend on port 3000..."
+# 2. Start Frontend
+echo "🎨 Starting Frontend on port 3000..."
 cd frontend
-npm run dev > ../logs/frontend.log 2>&1 &
+# We run this in the background but let it print to STDOUT
+npm run dev &
 FRONTEND_PID=$!
 cd ..
 
-# Save PIDs to a hidden file
-echo $BACKEND_PID > .pids
-echo $FRONTEND_PID >> .pids
+echo "✅ Both servers are streaming to this terminal."
+echo "⌨️  Press Ctrl+C to stop both servers."
 
-echo "✅ Systems are running!"
-echo "📄 Backend logs: tail -f logs/backend.log"
-echo "📄 Frontend logs: tail -f logs/frontend.log"
+# Wait for background processes to keep the script alive
+wait
